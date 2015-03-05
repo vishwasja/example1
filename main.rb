@@ -1,13 +1,19 @@
 require './coordinate.rb'
 require './rover.rb'
-
+require './plateau_types/circular_plateau'
+require './plateau_types/square_plateau'
 
 class Mission
 
   attr_accessor :plateau, :rover
 
   def initialize_plateau type, pla_x, pla_y, length
-    @plateau = Plateau.new(type, pla_x, pla_y, length)
+    case type
+      when 'CIRCLE'
+        @plateau = CircularPlateau.new(pla_x, pla_y, length)
+      when 'SQUARE'
+        @plateau = SquarePlateau.new(pla_x, pla_y, length)
+    end
   end
 
   def initialize_rover x,y,dir
@@ -27,43 +33,6 @@ class Mission
   end
 
 end
-
-
-
-class Plateau
-
-  attr_accessor :type, :pos
-
-  def initialize type, x, y, length
-    @type, @length = type, length
-    @pos = Coordinate.new(x,y)
-  end
-
-  def can_rover_move_forward(rover)
-    case type
-      when 'CIRCLE'
-        case rover.current_pos.dir
-          when 'E'
-            (rover.current_pos.x - @pos.x + 1) ** 2 + (rover.current_pos.y - @pos.y) ** 2 <= (@length ** 2)
-          when 'W'
-            (rover.current_pos.x - @pos.x - 1) ** 2 + (rover.current_pos.y - @pos.y) ** 2 <= (@length ** 2)
-          when 'N'
-            (rover.current_pos.x - @pos.x) ** 2 + (rover.current_pos.y - @pos.y + 1) ** 2 <= (@length ** 2)
-          when 'S'
-            (rover.current_pos.x - @pos.x) ** 2 + (rover.current_pos.y - @pos.y - 1) ** 2 <= (@length ** 2)
-        end
-      when 'SQUARE'
-        (rover.current_pos.dir == 'N' && rover.current_pos.y < (pos.y + @length)) ||
-        (rover.current_pos.dir == 'S' && rover.current_pos.y > pos.y) ||
-        (rover.current_pos.dir == 'E' && rover.current_pos.x < ( pos.x + @length)) ||
-        (rover.current_pos.dir == 'W' && rover.current_pos.x > pos.x)
-    end
-  end
-
-end
-
-
-
 
 input = ["CIRCLE", 5, 5, 2,6, 5, 'N', 'MRMLMLMRMRRM',
          "SQUARE", 3, 4, 5, 6, 5, 'N', 'MRMLMLMRMRRM']
